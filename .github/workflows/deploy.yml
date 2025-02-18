@@ -1,0 +1,44 @@
+name: Deploy to Digital Ocean
+
+on:
+  push:
+    branches:
+      - master
+
+  pull_request:
+    types:
+      - closed
+    branches:
+      - master 
+
+      
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Deploy to Digital Ocean
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: ${{ secrets.DIGITAL_OCEAN_HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.SSH_KEY }}
+        port: 22
+        script: |
+          cd /hello-world
+          if [ ! -d ".git" ]; then
+            rm -rf .[^.]* *
+            git config --global user.email "swavishtek9@gmail.com"
+            git config --global user.name "SwavishTek"
+            git clone https://github.com/SwavishTek/hello-world.git .
+          else
+            git reset --hard origin/master
+            git pull origin master --rebase
+            git clean -fd
+          fi
+          npm cache clean --force
+          npm ci
+          pm2 restart index.js || pm2 start index.js
