@@ -23,7 +23,7 @@ jobs:
     - name: Deploy to Digital Ocean
       uses: appleboy/ssh-action@v0.1.6
       with:
-        host: ${{ secrets.DIGITAL_OCEAN_HOST }}
+        host: ${{ secrets.DDIGITAL_OCEAN_HOST }}
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         port: 22
